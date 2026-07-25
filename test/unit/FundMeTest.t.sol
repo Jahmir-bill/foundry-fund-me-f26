@@ -15,19 +15,20 @@ contract FundMetest is Test {
     uint256 constant GAS_PRICE = 1;
 
     function setUp() external {
-       //fundMe = new FundMe(0x694AA1769357215DE4FAC081bf1f309aDC325306);
-       DeployFundMe deployFundMe = new DeployFundMe();
-         fundMe = deployFundMe.run();
-         vm.deal(USER, STARTING_USER_BALANCE);
+        //fundMe = new FundMe(0x694AA1769357215DE4FAC081bf1f309aDC325306);
+        DeployFundMe deployFundMe = new DeployFundMe();
+        fundMe = deployFundMe.run();
+        vm.deal(USER, STARTING_USER_BALANCE);
     }
 
     function testMinimumDollarIsFive() public view {
-       assertEq(fundMe.MINIMUM_USD(), 5e18);
+        assertEq(fundMe.MINIMUM_USD(), 5e18);
     }
 
     function testOwnerIsMsgSender() public view {
         assertEq(fundMe.getOwner(), msg.sender);
     }
+
     function testPriceFeedVersionIsAccurate() public view {
         uint256 version = fundMe.getVersion();
         assertEq(version, 4); // was 4 for sepolia and 6 for mainnet
@@ -38,8 +39,8 @@ contract FundMetest is Test {
         fundMe.fund(); // 0.01 ETH
     }
 
-    function testFundUpdatesFundedDataStructure () public {
-        vm.prank(USER); 
+    function testFundUpdatesFundedDataStructure() public {
+        vm.prank(USER);
         fundMe.fund{value: SEND_VALUE}();
 
         uint256 amountFunded = fundMe.getAddressToAmountFunded(USER);
@@ -60,7 +61,7 @@ contract FundMetest is Test {
         _;
     }
 
-    function testOnlyOwnerCanWithdraw() public funded{
+    function testOnlyOwnerCanWithdraw() public funded {
         vm.prank(USER);
         vm.expectRevert();
         fundMe.withdraw();
@@ -75,13 +76,12 @@ contract FundMetest is Test {
         vm.prank(fundMe.getOwner());
         fundMe.withdraw();
 
-
         // Assert
         uint256 endingOwnerBalance = fundMe.getOwner().balance;
         uint256 endingFundMeBalance = address(fundMe).balance;
         assertEq(endingFundMeBalance, 0);
         assertEq(startingFundMeBalance + startingOwnerBalance, endingOwnerBalance);
-    }   
+    }
 
     function testWithdrawFromMultipleFunders() public funded {
         // Arrange
@@ -136,5 +136,4 @@ contract FundMetest is Test {
         assertEq(endingFundMeBalance, 0);
         assertEq(startingFundMeBalance + startingOwnerBalance, endingOwnerBalance);
     }
-
 }

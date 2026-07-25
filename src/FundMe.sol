@@ -16,12 +16,11 @@ contract FundMe {
     // Could we make this constant?  /* hint: no! We should make it immutable! */
     address private /* immutable */ i_owner;
     uint256 public constant MINIMUM_USD = 5e18;
-    AggregatorV3Interface private  s_priceFeed;
+    AggregatorV3Interface private s_priceFeed;
 
     constructor(address priceFeed) {
         i_owner = msg.sender;
         s_priceFeed = AggregatorV3Interface(priceFeed);
-
     }
 
     function fund() public payable {
@@ -48,7 +47,7 @@ contract FundMe {
             s_addressToAmountFunded[funder] = 0;
         }
         s_funders = new address[](0);
-         (bool callSuccess,) = payable(msg.sender).call{value: address(this).balance}("");
+        (bool callSuccess,) = payable(msg.sender).call{value: address(this).balance}("");
         require(callSuccess, "Call failed");
     }
 
@@ -90,32 +89,21 @@ contract FundMe {
     }
 
     /**
-     * View / Pure functions (Getters)  
+     * View / Pure functions (Getters)
      */
 
-    function getAddressToAmountFunded(
-        address FundingAddress
-     ) external view returns (uint256) {
+    function getAddressToAmountFunded(address FundingAddress) external view returns (uint256) {
         return s_addressToAmountFunded[FundingAddress];
-    }   
+    }
 
     function getFunder(uint256 index) external view returns (address) {
         return s_funders[index];
-    }   
+    }
 
     function getOwner() external view returns (address) {
         return i_owner;
     }
 }
-
-
-
-
-
-
-
-
-
 
 // Concepts we didn't cover yet (will cover in later sections)
 // 1. Enum
